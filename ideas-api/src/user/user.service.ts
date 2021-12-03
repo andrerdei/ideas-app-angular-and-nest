@@ -13,7 +13,7 @@ export class UserService {
   }
 
   async showAll(): Promise<UserRO[]> {
-    const users = await this.userRepository.find();
+    const users = await this.userRepository.find({relations: ['ideas']});
     return users.map(user => user.toResponseObject(false));
   }
 
@@ -32,7 +32,7 @@ export class UserService {
   }
 
   async register(data: UserDTO): Promise<UserRO> {
-    const {username, password} = data;
+    const {username} = data;
     let user = await this.userRepository.findOne({where: {username}});
 
     if (user) {
