@@ -1,7 +1,7 @@
 import {Controller, Delete, Get, Post, Put, Param, Body, UsePipes, Logger, UseGuards} from '@nestjs/common';
 
 import {IdeaService} from "./idea.service";
-import {IdeaDTO} from "./idea.dto";
+import {IdeaDTO, IdeaRO} from "./idea.dto";
 import {ValidationPipe} from "../shared/validation.pipe";
 import {AuthGuard} from "../shared/auth.guard";
 import {User} from "../user/user.decorator";
@@ -15,7 +15,7 @@ export class IdeaController {
   }
 
   @Get()
-  public showIdeasList(): Promise<IdeaEntity[]> {
+  public showIdeasList(): Promise<IdeaRO[]> {
     return this.ideaService.showAll();
   }
 
@@ -52,5 +52,33 @@ export class IdeaController {
   ): Promise<IdeaDTO> {
     this.logger.log(JSON.stringify({id, user}))
     return this.ideaService.delete(id, user);
+  }
+
+  @Post(':id/upvote')
+  @UseGuards(new AuthGuard())
+  upvoteIdea(@Param('id') id: string, @User('id') user: string) {
+    this.logger.log(JSON.stringify({id, user}));
+    return this.ideaService.upvoteIdea(id, user);
+  }
+
+  @Post(':id/downvote')
+  @UseGuards(new AuthGuard())
+  downvoteIdea(@Param('id') id: string, @User('id') user: string) {
+    this.logger.log(JSON.stringify({id, user}));
+    return this.ideaService.downvoteIdea(id, user);
+  }
+
+  @Post(':id/bookmark')
+  @UseGuards(new AuthGuard())
+  bookmarkIdea(@Param('id') id: string, @User('id') user: string) {
+    this.logger.log(JSON.stringify({id, user}));
+    return this.ideaService.bookmark(id, user);
+  }
+
+  @Delete(':id/bookmark')
+  @UseGuards(new AuthGuard())
+  unBookmarkIdea(@Param('id') id: string, @User('id') user: string) {
+    this.logger.log(JSON.stringify({id, user}));
+    return this.ideaService.unBookmark(id, user);
   }
 }

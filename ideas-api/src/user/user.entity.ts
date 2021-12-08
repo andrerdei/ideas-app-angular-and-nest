@@ -2,7 +2,7 @@ import {
   BeforeInsert,
   Column,
   CreateDateColumn,
-  Entity,
+  Entity, JoinTable, ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -37,6 +37,10 @@ export class UserEntity {
   @OneToMany(type => IdeaEntity, idea => idea.author)
   ideas: IdeaEntity[];
 
+  @ManyToMany(type => IdeaEntity, {cascade: true})
+  @JoinTable()
+  bookmarks: IdeaEntity[];
+
   private get token() {
     const {id, username} = this;
     return jwt.sign(
@@ -64,6 +68,14 @@ export class UserEntity {
 
     if (showToken) {
       responseObject.token = token;
+    }
+
+    if (this.ideas) {
+      responseObject.ideas = this.ideas;
+    }
+
+    if (this.bookmarks) {
+      responseObject.bookmarks = this.bookmarks;
     }
 
     return responseObject;
